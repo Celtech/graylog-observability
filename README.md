@@ -1,4 +1,18 @@
-# Docker Swarm Graylog observability demo
+# Graylog observability
+
+This repository showcases a redundant, highly available, multi-node Graylog 
+cluster. Following this demo will teach you to create three service replicas per 
+service across three nodes for the following: 
+
+- HAProxy
+- Graylog 
+- Elasticsearch
+- Mongodb
+
+This will allow you to maintain quorum and create a highly available logging 
+cluster that can be updated and maintained with zero downtime. Beyond that we 
+will explore the best practices for configuration, security, TLS termination and
+more.
 
 ## System requirements
 
