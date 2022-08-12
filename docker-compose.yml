@@ -46,6 +46,9 @@ services:
     depends_on:
       - observability-mongodb
       - observability-elasticsearch
+    secrets:
+      - graylog_password_secret
+      - graylog_root_password_sha2
 
   observability-mongodb:
     image: mongo:4.4.12
@@ -102,3 +105,11 @@ networks:
   observability-internal:
     name: observability-internal
     driver: overlay
+
+secrets:
+  graylog_password_secret:
+    name: graylog_password_secret
+    external: true
+  graylog_root_password_sha2:
+    name: graylog_root_password_sha2
+    external: true
