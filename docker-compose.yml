@@ -1,0 +1,104 @@
+version: '3.8'
+services:
+  observability-haproxy:
+    image: haproxy:2.6.2-alpine3.16
+    dns:
+      # Dockers internal DNS server used to resolve container IP addresses in HAProxy
+      - 127.0.0.11
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: ingress
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: ingress
+      - target: 12201
+        published: 12201
+        protocol: tcp
+        mode: ingress
+    networks:
+      - observability-external
+    volumes:
+      - ./config/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+
+  observability-graylog:
+    image: graylog/graylog:4.3.3-jre11
+    entrypoint: /usr/bin/tini -- wait-for-it observability-elasticsearch:9200 --  /docker-entrypoint.sh
+    networks:
+      - observability-external
+      - observability-internal
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+    environment:
+      - GRAYLOG_PASSWORD_SECRET__FILE=/run/secrets/graylog_password_secret
+      - GRAYLOG_ROOT_PASSWORD_SHA2__FILE=/run/secrets/graylog_root_password_sha2
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://167.99.5.59/ # Public IP or domain name that points to graylog
+      - GRAYLOG_IS_LEADER={{eq .Task.Slot "1"}}
+    volumes:
+      - ./config/graylog/config/graylog.cfg:/usr/share/graylog/data/config/graylog.conf
+      - observability-graylog:/usr/share/graylog/data
+    depends_on:
+      - observability-mongodb
+      - observability-elasticsearch
+
+  observability-mongodb:
+    image: mongo:4.4.12
+    networks:
+      - observability-internal
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo 127.0.0.1:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    volumes:
+      - observability-mongodb:/data/db
+
+  observability-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    environment:
+      - cluster.name=elastic-cluster
+      - node.name=elastic-node-{{.Task.Slot}}
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - observability-internal
+    healthcheck:
+      test: curl -s http://127.0.0.1:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - observability-elasticsearch:/usr/share/elasticsearch/data
+
+volumes:
+  observability-graylog:
+    name: 'observability-graylog-{{.Task.Slot}}'
+  observability-elasticsearch:
+    name: 'observability-elasticsearch-{{.Task.Slot}}'
+  observability-mongodb:
+    name: 'observability-mongodb-{{.Task.Slot}}'
+
+networks:
+  # Public facing resources exposed to end users such as graylog and
+  # HAProxy
+  observability-external:
+    name: observability-external
+    driver: overlay
+  # Internal services network that our load balancer should not know about
+  # such as Mongodb and Elasticsearch
+  observability-internal:
+    name: observability-internal
+    driver: overlay

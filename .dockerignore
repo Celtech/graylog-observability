@@ -1,0 +1,25 @@
+# Documentation files
+docs/
+**/README*
+**/LICENSE*
+**/CONTRIBUTING*
+**/CODEOWNERS*
+
+# IDEs
+.idea/
+.vscode/
+.editorconfig
+
+# System files
+.DS_Store
+
+# CI/CD
+.gitlab/
+.github/
+
+# Docker
+docker-compose.*
+
+# Ignore files
+.gitignore
+.dockerignore
