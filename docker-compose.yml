@@ -41,7 +41,7 @@ services:
       - GRAYLOG_HTTP_EXTERNAL_URI=http://167.99.5.59/ # Public IP or domain name that points to graylog
       - GRAYLOG_IS_LEADER={{eq .Task.Slot "1"}}
     volumes:
-      - ./config/graylog/config/graylog.cfg:/usr/share/graylog/data/config/graylog.conf
+      - ./config/graylog/graylog.cfg:/usr/share/graylog/data/config/graylog.conf
       - observability-graylog:/usr/share/graylog/data
     depends_on:
       - observability-mongodb
