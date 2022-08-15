@@ -57,6 +57,7 @@ services:
 
   observability-mongodb:
     image: mongo:4.4.12
+    command: mongod --replSet ObservabilitySet
     networks:
       - observability-internal
     healthcheck:
@@ -65,8 +66,18 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+    deploy:
+      replicas: 3 # Prefer odd numbers to maintain quorum
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
     volumes:
       - observability-mongodb:/data/db
+      - /etc/localtime:/etc/localtime:ro
+#    secrets:
+#      - mongodb_key_file
+#      - mongodb_cert_pem
 
   observability-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
@@ -118,3 +129,9 @@ secrets:
   graylog_root_password_sha2:
     name: graylog_root_password_sha2
     external: true
+#  mongodb_key_file:
+#    name: mongodb_key_file
+#    external: true
+#  mongodb_cert_pem:
+#    name: mongodb_cert_pem
+#    external: true
