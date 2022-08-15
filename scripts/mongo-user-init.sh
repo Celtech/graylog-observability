@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CONTAINER_ID=$(docker ps -qf "label=com.docker.swarm.service.name=graylog_observability-mongodb" -f "health=healthy" -n 1)
+CONTAINER_ID=$(docker ps -qf name=graylog_observability-mongodb.1)
 MONGO_ADMIN_CMD='admin = db.getSiblingDB("admin")
 admin.createUser(
   {
