@@ -61,6 +61,9 @@ services:
     hostname: "observability-mongodb-{{.Task.Slot}}"
     networks:
       - observability-internal
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_password
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongo 127.0.0.1:27017/test --quiet
       interval: 10s
@@ -77,6 +80,7 @@ services:
       - observability-mongodb:/data/db
       - /etc/localtime:/etc/localtime:ro
     secrets:
+      - mongodb_root_password
       - source: mongodb_key_file
         uid: '999'
         gid: '999'
@@ -132,6 +136,9 @@ secrets:
     external: true
   graylog_root_password_sha2:
     name: graylog_root_password_sha2
+    external: true
+  mongodb_root_password:
+    name: mongodb_root_password
     external: true
   mongodb_key_file:
     name: mongodb_key_file
