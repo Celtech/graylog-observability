@@ -57,7 +57,7 @@ services:
 
   observability-mongodb:
     image: mongo:4.4.12
-    command: mongod --replSet ObservabilitySet
+    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file
     hostname: "observability-mongodb-{{.Task.Slot}}"
     networks:
       - observability-internal
@@ -76,8 +76,11 @@ services:
     volumes:
       - observability-mongodb:/data/db
       - /etc/localtime:/etc/localtime:ro
-#    secrets:
-#      - mongodb_key_file
+    secrets:
+      - source: mongodb_key_file
+        uid: '999'
+        gid: '999'
+        mode: 0600
 #      - mongodb_cert_pem
 
   observability-elasticsearch:
@@ -130,9 +133,9 @@ secrets:
   graylog_root_password_sha2:
     name: graylog_root_password_sha2
     external: true
-#  mongodb_key_file:
-#    name: mongodb_key_file
-#    external: true
+  mongodb_key_file:
+    name: mongodb_key_file
+    external: true
 #  mongodb_cert_pem:
 #    name: mongodb_cert_pem
 #    external: true
