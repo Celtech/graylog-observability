@@ -6,7 +6,7 @@ admin.createUser(
   {
     user: "admin",
     pwd: "password",
-    roles: [ { role: "root", db: "admin" } ]
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
   }
 )'
 
