@@ -47,6 +47,12 @@ number of managers in order to [maintain quorum][1].
 
 ### Clone this repository
 
+### Generate Mongodb keyfile
+
+```shell
+openssl rand -base64 741 > mongodb-keyfile && chmod 600 mongodb-keyfile
+```
+
 ### Set up your secrets
 
 ```shell
@@ -55,6 +61,9 @@ number of managers in order to [maintain quorum][1].
 # Ref: https://docs.graylog.org/docs/docker#settings
 printf "somepasswordpepper" | docker secret create graylog_password_secret -
 printf "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" | docker secret create graylog_root_password_sha2 -
+
+# Mongodb keyfile(created in previous step) secret 
+docker secret create mongodb_key_file ./mongodb-keyfile
 ```
 
 To generate a new root password you can execute the following command and copy
