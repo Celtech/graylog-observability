@@ -17,4 +17,4 @@ CONTAINER_ID=$(docker ps -qf "label=com.docker.swarm.service.name=graylog_observ
 
 docker exec -it \
   "$CONTAINER_ID" \
-  bash -c "mongo --host observability-mongodb-1:27017 --eval $RSCONFIG"
+  bash -c "echo '${RSCONFIG}' | mongo --host observability-mongodb-1:27017"
