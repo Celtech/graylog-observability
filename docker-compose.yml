@@ -69,6 +69,8 @@ services:
       start_period: 40s
     deploy:
       replicas: 3 # Prefer odd numbers to maintain quorum
+      labels:
+        com.observability.mongodb: "graylog-observability-mongodb-{{.Task.Slot}}"
       update_config:
         parallelism: 1
         delay: 10s
