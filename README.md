@@ -64,6 +64,9 @@ printf "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" | dock
 
 # Mongodb keyfile(created in previous step) secret 
 docker secret create mongodb_key_file ./mongodb-keyfile
+
+# Mongodb root password for user `root`
+printf "your-plain-text-password" | docker secret create mongodb_root_password -
 ```
 
 To generate a new root password you can execute the following command and copy
