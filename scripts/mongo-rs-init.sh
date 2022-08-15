@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 SERVERS=3
+REPLICA_SET_NAME=ObservabilitySet
 
 echo "Building replica set member list"
 for (( c=1; c<=$SERVERS; c++ )); do
@@ -10,9 +11,10 @@ for (( c=1; c<=$SERVERS; c++ )); do
   fi
 done
 
-RSCONFIG="rs.initiate({_id: \"ObservabilitySet\", version: 1, members: [$MEMBERS]})"
-echo $RSCONFIG
+echo "Creating Mongodb replica set $REPLICA_SET_NAME"
+RSCONFIG="rs.initiate({_id: \"$REPLICA_SET_NAME\", version: 1, members: [$MEMBERS]})"
+CONTAINER_ID=$(docker ps -qf "label=com.docker.swarm.service.name=graylog_observability-mongodb" -f "health=healthy" -n 1)
 
 docker exec -it \
-  $(docker ps -qf "label=com.docker.swarm.service.name=graylog_observability-mongodb" -f "health=healthy" -n 1) \
+  "$CONTAINER_ID" \
   bash -c "mongo --host observability-mongodb-1:27017 --eval $RSCONFIG"
