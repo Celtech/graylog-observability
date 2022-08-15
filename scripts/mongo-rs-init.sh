@@ -12,9 +12,11 @@ for (( c=1; c<=$SERVERS; c++ )); do
 done
 
 echo "Creating Mongodb replica set $REPLICA_SET_NAME"
+
 RSCONFIG="rs.initiate({_id: \"$REPLICA_SET_NAME\", version: 1, members: [$MEMBERS]})"
 CONTAINER_ID=$(docker ps -qf name=graylog_observability-mongodb.1)
+PASSWORD=$(docker exec -it "$CONTAINER_ID" bash -c "cat /run/secrets/mongodb_root_password")
 
 docker exec -it \
   "$CONTAINER_ID" \
-  bash -c "echo '${RSCONFIG}' | mongo"
+  bash -c "echo '${RSCONFIG}' | mongo -u root -p $PASSWORD"
