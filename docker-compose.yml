@@ -58,6 +58,7 @@ services:
   observability-mongodb:
     image: mongo:4.4.12
     command: mongod --replSet ObservabilitySet
+    hostname: "observability-mongodb-{{.Task.Slot}}"
     networks:
       - observability-internal
     healthcheck:
