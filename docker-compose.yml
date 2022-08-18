@@ -62,7 +62,7 @@ services:
   observability-mongodb:
     image: mongo:4.4.12
     command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file
-    hostname: "observability-mongodb-{{.Task.Slot}}"
+    hostname: "{{.Task.Slot}}.observability-mongodb"
     networks:
       - observability-internal
     environment:

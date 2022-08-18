@@ -4,7 +4,7 @@ REPLICA_SET_NAME=ObservabilitySet
 
 echo "Building replica set member list"
 for (( c=1; c<=$SERVERS; c++ )); do
-  MEMBERS="$MEMBERS {_id: $c, host: \"observability-mongodb-$c:27017\"}"
+  MEMBERS="$MEMBERS {_id: $c, host: \"$c.observability-mongodb:27017\"}"
 
   if [ "$c" != $SERVERS ]; then
        MEMBERS="$MEMBERS,"
