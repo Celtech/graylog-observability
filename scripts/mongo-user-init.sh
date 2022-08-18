@@ -14,4 +14,4 @@ admin.createUser(
 
 docker exec -it \
   "$CONTAINER_ID" \
-  bash -c "echo '${MONGO_ADMIN_CMD}' | mongo -u root -p $PASSWORD"
+  bash -c "echo '${MONGO_ADMIN_CMD}' | mongo --ssl --sslAllowInvalidHostnames --sslCAFile /run/secrets/mongodb_ca_crt --sslPEMKeyFile /run/secrets/mongodb_cert_pem -u root -p $PASSWORD"

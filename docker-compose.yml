@@ -61,7 +61,7 @@ services:
 
   observability-mongodb:
     image: mongo:4.4.12
-    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file
+    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file --sslMode requireSSL --sslPEMKeyFile /run/secrets/mongodb_cert_pem --sslCAFile /run/secrets/mongodb_ca_crt
     hostname: "{{.Task.Slot}}.observability-mongodb"
     networks:
       - observability-internal
@@ -90,7 +90,8 @@ services:
         uid: '999'
         gid: '999'
         mode: 0600
-#      - mongodb_cert_pem
+      - mongodb_cert_pem
+      - mongodb_ca_crt
 
   observability-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
@@ -148,6 +149,9 @@ secrets:
   mongodb_key_file:
     name: mongodb_key_file
     external: true
-#  mongodb_cert_pem:
-#    name: mongodb_cert_pem
-#    external: true
+  mongodb_cert_pem:
+    name: mongodb_cert_pem
+    external: true
+  mongodb_ca_crt:
+    name: mongodb_ca_crt
+    external: true
