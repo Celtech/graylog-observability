@@ -50,10 +50,10 @@ services:
     depends_on:
       - observability-mongodb
       - observability-elasticsearch
-      - mongodb_ca_crt
     secrets:
       - graylog_password_secret
       - graylog_root_password_sha2
+      - mongodb_ca_crt
     healthcheck: # This healthcheck MUST be present: https://github.com/Graylog2/graylog-docker/issues/101
       test: curl -s http://127.0.0.1:9000 >/dev/null || exit 1
       interval: 30s
