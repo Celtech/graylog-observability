@@ -50,7 +50,6 @@ services:
     depends_on:
       - observability-mongodb
       - observability-elasticsearch
-      - mongodb_cert_pem
       - mongodb_ca_crt
     secrets:
       - graylog_password_secret
