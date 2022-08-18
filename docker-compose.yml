@@ -53,7 +53,6 @@ services:
     secrets:
       - graylog_password_secret
       - graylog_root_password_sha2
-      - mongodb_ca_crt
     healthcheck: # This healthcheck MUST be present: https://github.com/Graylog2/graylog-docker/issues/101
       test: curl -s http://127.0.0.1:9000 >/dev/null || exit 1
       interval: 30s
@@ -62,7 +61,7 @@ services:
 
   observability-mongodb:
     image: mongo:4.4.12
-    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file --tlsMode requireTLS --tlsCertificateKeyFile /run/secrets/mongodb_cert_pem
+    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file
     hostname: "{{.Task.Slot}}.observability-mongodb"
     networks:
       - observability-internal
@@ -71,7 +70,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_password
       MONGO_INITDB_DATABASE: graylog
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo 127.0.0.1:27017/test --quiet --tls --tlsAllowInvalidHostnames --tlsCAFile /run/secrets/mongodb_ca_crt --tlsCertificateKeyFile /run/secrets/mongodb_cert_pem
+      test: echo 'db.runCommand("ping").ok' | mongo 127.0.0.1:27017/test --quiet
       interval: 10s
       timeout: 10s
       retries: 5
@@ -91,8 +90,6 @@ services:
         uid: '999'
         gid: '999'
         mode: 0600
-      - mongodb_cert_pem
-      - mongodb_ca_crt
 
   observability-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
@@ -149,10 +146,4 @@ secrets:
     external: true
   mongodb_key_file:
     name: mongodb_key_file
-    external: true
-  mongodb_cert_pem:
-    name: mongodb_cert_pem
-    external: true
-  mongodb_ca_crt:
-    name: mongodb_ca_crt
     external: true
