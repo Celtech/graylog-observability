@@ -61,7 +61,7 @@ services:
 
   observability-mongodb:
     image: mongo:4.4.12
-    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file --sslMode requireSSL --sslPEMKeyFile /run/secrets/mongodb_cert_pem --sslCAFile /run/secrets/mongodb_ca_crt
+    command: mongod --replSet ObservabilitySet --keyFile /run/secrets/mongodb_key_file --tlsMode requireTLS --tlsCertificateKeyFile /run/secrets/mongodb_cert_pem --tlsCAFile /run/secrets/mongodb_ca_crt
     hostname: "{{.Task.Slot}}.observability-mongodb"
     networks:
       - observability-internal
