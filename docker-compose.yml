@@ -93,8 +93,11 @@ services:
 
   observability-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    hostname: "{{.Task.Slot}}.observability-elasticsearch"
     environment:
       - cluster.name=elastic-cluster
+#      - discovery.seed_hosts=1.observability-elasticsearch,2.observability-elasticsearch,3.observability-elasticsearch
+#      - cluster.initial_master_nodes=elastic-node-1,elastic-node-2,elastic-node-3
       - node.name=elastic-node-{{.Task.Slot}}
       - http.host=0.0.0.0
       - transport.host=localhost
@@ -104,6 +107,12 @@ services:
       memlock:
         soft: -1
         hard: -1
+    deploy:
+      replicas: 3 # Prefer odd numbers to maintain quorum
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
     networks:
       - observability-internal
     healthcheck:
