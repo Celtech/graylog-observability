@@ -19,4 +19,4 @@ PASSWORD=$(docker exec -it "$CONTAINER_ID" bash -c "cat /run/secrets/mongodb_roo
 
 docker exec -it \
   "$CONTAINER_ID" \
-  bash -c "echo '${RSCONFIG}' | mongo --tls --tlsAllowInvalidHostnames --tlsCertificateKeyFile /run/secrets/mongodb_cert_pem -u root -p $PASSWORD"
+  bash -c "echo '${RSCONFIG}' | mongo --tls --tlsAllowInvalidHostnames --tlsCAFile /run/secrets/mongodb_ca_crt --tlsCertificateKeyFile /run/secrets/mongodb_cert_pem -u root -p $PASSWORD"
